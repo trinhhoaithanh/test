@@ -61,6 +61,7 @@ const Login = () => {
         <div className="form-group">
           <p className="m-0">Password</p>
           <input
+          type='password'
             placeholder="password"
             className="form-control"
             name="password"
@@ -79,7 +80,7 @@ const Login = () => {
                   history.push("/register");
                 }}
                 className="text-center pt-3"
-                style={{
+                style={{ cursor:'pointer',
                   color: "#152AEB",
                   fontFamily: "Roboto",
                   fontStyle: "normal",

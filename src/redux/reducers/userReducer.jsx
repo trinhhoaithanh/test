@@ -2,12 +2,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 import axios from 'axios';
 import { history } from '../../index';
-import { ACCESS_TOKEN, getStore, getStoreJson, http, saveStore, saveStoreJson, USER_LOGIN } from '../../util/config';
+import { ACCESS_TOKEN, getStore, getStoreJson, http, saveStore, saveStoreJson, USER_LOGIN, USER_PROFILE, USER_REGISTER } from '../../util/config';
 
 const initialState = {
     userLogin: getStoreJson(USER_LOGIN),
-    userProfile: null,
-    userRegister:null
+    userProfile: getStoreJson(USER_PROFILE),
+    userRegister:getStore(USER_REGISTER)
 }
 
 const userReducer = createSlice({
@@ -20,16 +20,18 @@ const userReducer = createSlice({
         getProfileAction: (state,action) => {
             state.userProfile = action.payload
         },
-        registerAction:(state,action)=>{
-            state.userRegister=action.payload
-        },
+        
         updateProfileAction:(state,action)=>{
-            
+            state = action.payload
+        },
+        registerAction:(state,action)=>{
+            state.userRegister = action.payload
         }
+        
     }
 });
 
-export const {registerAction, loginAction,getProfileAction } = userReducer.actions
+export const {updateProfileAction,registerAction, loginAction,getProfileAction } = userReducer.actions
 
 export default userReducer.reducer
 
@@ -56,25 +58,35 @@ export const loginApi = (userLogin) => {
 
 
 export const getProfileApi = () => {
-    return async dispatch => {
-        const result = await http.post('/api/Users/getProfile')
-        //Sau khi lấy dữ liệu từ api về đưa lên reducer qua action creator 
+    return async (dispatch) => {
+        const result = await http.post('/api/Users/getProfile');
+        // cập nhật cho reducer
         const action = getProfileAction(result.data.content);
         dispatch(action);
-
-
+        console.log(result.data.content)
+        saveStoreJson(USER_PROFILE, result.data.content)
+      };
+}
+export const registerApi=(userRegister)=>{
+    return async dispatch=>{
+        const result = await http.post('/api/Users/signup',userRegister);
+        const action = registerAction(result.data.content);
+        console.log(action);
+        dispatch(action);
+        
+        //Lưu localstorage
+        saveStoreJson(USER_REGISTER,result.data.content);
+        alert("Đăng ký tài khoản thành công");
+        history.push('/login'); 
+        
     }
 }
-export const registerApi=()=>{
-    return async dispatch=>{
-        const result = await http.post('/api/Users/signup');
-        const action = registerAction(result.data.content);
-        console.log('user',result.data.content);
-        dispatch(action);
-        set
-        //Lưu localstorage
-        saveStoreJson('user',result.data.content);
-        
-        history.push('/login');
-    }
+export const updateProfileApi=(updateProfile)=>{
+    return async dispatch => {
+    const result = await http.post('/api/Users/updateProfile', updateProfile);
+      const action = updateProfileAction(result.data.content);
+      dispatch(action);
+      
+  
+  }
 }

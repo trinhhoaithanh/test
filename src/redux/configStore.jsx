@@ -8,6 +8,7 @@ export const store = configureStore({
     reducer: {
         productReducer:productReducer,
         userReducer:userReducer,
-        modalReducer:modalReducer
+        modalReducer:modalReducer,
+        
     }
 })
